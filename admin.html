@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIMO Secret Santa - Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="logo.jpg">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="logo-container">
+                <img src="logo.jpg" alt="DIMO Logo" class="logo">
+                <div class="header-text">
+                    <h1><i class="fas fa-user-shield"></i> DIMO Secret Santa - Admin Panel</h1>
+                    <p class="subtitle">Manage Employee Data and Assignments</p>
+                </div>
+            </div>
+            <div class="admin-actions">
+                <button id="backToLogin" class="btn-admin">
+                    <i class="fas fa-home"></i> Back to Login
+                </button>
+                <button id="viewDashboard" class="btn-admin">
+                    <i class="fas fa-eye"></i> Preview Dashboard
+                </button>
+            </div>
+        </header>
+        
+        <main class="admin-main">
+            <div class="admin-section">
+                <h2><i class="fas fa-file-excel"></i> Import Employee Data</h2>
+                <p>Upload your Excel file or paste data manually. Format: Name, Employee Number, Email (optional)</p>
+                
+                <div class="import-container">
+                    <div class="import-instructions">
+                        <h3><i class="fas fa-info-circle"></i> Instructions:</h3>
+                        <div class="upload-area" id="dropArea">
+                            <i class="fas fa-file-upload"></i>
+                            <p><strong>Drag & Drop Excel File Here</strong></p>
+                            <p>or</p>
+                            <button id="browseBtn" class="btn-admin">
+                                <i class="fas fa-folder-open"></i> Browse Files
+                            </button>
+                            <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" style="display: none;">
+                            <p class="file-types">Supports: .xlsx, .xls, .csv</p>
+                        </div>
+                        
+                        <div class="example">
+                            <h4>Required Format:</h4>
+                            <div class="format-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Employee Number</th>
+                                            <th>Email</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>John Doe</td>
+                                            <td>1001</td>
+                                            <td>john@dimoagri.com</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jane Smith</td>
+                                            <td>1002</td>
+                                            <td>jane@dimoagri.com</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="import-area">
+                        <div class="import-method-selector">
+                            <button class="method-btn active" data-method="file">Upload File</button>
+                            <button class="method-btn" data-method="paste">Paste Data</button>
+                        </div>
+                        
+                        <div class="import-content">
+                            <div class="file-upload-container active" id="fileUploadContainer">
+                                <div class="upload-status" id="uploadStatus">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>No file selected. Drag & drop or click browse above.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="paste-container" id="pasteContainer">
+                                <textarea id="excelData" placeholder="Paste your Excel data here (Name, Emp#, Email)..."></textarea>
+                                <div class="import-buttons">
+                                    <button id="processDataBtn" class="btn-generate">
+                                        <i class="fas fa-cogs"></i> Process Pasted Data
+                                    </button>
+                                    <button id="clearDataBtn" class="btn-reset">
+                                        <i class="fas fa-trash"></i> Clear
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="data-stats">
+                            <p><i class="fas fa-users"></i> Employees loaded: <span id="employeeCount">0</span></p>
+                            <p><i class="fas fa-check-circle"></i> Data status: <span id="dataStatus">No data loaded</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h2><i class="fas fa-list"></i> Employee List</h2>
+                <div id="employeeList" class="employee-list">
+                    <div class="empty-list">
+                        <i class="fas fa-users-slash"></i>
+                        <p>No employee data loaded yet. Import data using the section above.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h2><i class="fas fa-random"></i> Generate Secret Santa Assignments</h2>
+                <p>Click the button below to generate unique Secret Santa assignments for all employees.</p>
+                
+                <div class="generation-controls">
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="emailNotifications" checked>
+                            <i class="fas fa-envelope"></i> Email notifications
+                        </label>
+                        <label>
+                            <input type="checkbox" id="validateData" checked>
+                            <i class="fas fa-check-double"></i> Validate assignments
+                        </label>
+                    </div>
+                    
+                    <button id="generateAssignmentsBtn" class="btn-generate-large">
+                        <i class="fas fa-magic"></i> Generate Secret Santa Assignments
+                    </button>
+                    
+                    <div class="assignment-stats">
+                        <p><i class="fas fa-exchange-alt"></i> Assignments generated: <span id="assignmentCount">0</span></p>
+                        <p><i class="fas fa-history"></i> Last generated: <span id="lastGenerated">Never</span></p>
+                    </div>
+                </div>
+                
+                <div id="assignmentsPreview" class="assignments-preview">
+                    <h3><i class="fas fa-eye"></i> Assignments Preview</h3>
+                    <div id="assignmentsList" class="assignments-list">
+                        <p class="empty-preview">Assignments will appear here after generation</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h2><i class="fas fa-cogs"></i> Admin Tools</h2>
+                <div class="tool-buttons">
+                    <button id="resetAllBtn" class="btn-reset">
+                        <i class="fas fa-redo"></i> Reset All Data
+                    </button>
+                    <button id="exportDataBtn" class="btn-admin">
+                        <i class="fas fa-download"></i> Export Assignments
+                    </button>
+                    <button id="sendAllEmailsBtn" class="btn-email">
+                        <i class="fas fa-paper-plane"></i> Send Test Email
+                    </button>
+                    <button id="addTestDataBtn" class="btn-test">
+                        <i class="fas fa-plus-circle"></i> Add Test Data
+                    </button>
+                </div>
+                
+                <div class="admin-info">
+                    <h3><i class="fas fa-shield-alt"></i> System Information</h3>
+                    <ul>
+                        <li><strong>Admin Password:</strong> HabourRay12@</li>
+                        <li><strong>Total Employees:</strong> <span id="totalEmployees">0</span></li>
+                        <li><strong>Assignments Status:</strong> <span id="assignmentsStatus">Not generated</span></li>
+                        <li><strong>Test Login:</strong> Name: John Doe, Emp#: 1001</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="admin-footer">
+            <p>© <span id="currentYear"></span> DIMO Agribusinesses - Admin Panel | For authorized personnel only</p>
+            <div class="footer-icons">
+                <i class="fas fa-user-shield"></i>
+                <i class="fas fa-lock"></i>
+                <i class="fas fa-cogs"></i>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2 id="modalTitle">Success!</h2>
+            <p id="modalMessage">Operation completed successfully.</p>
+            <button id="closeModal" class="btn-generate">OK</button>
+        </div>
+    </div>
+    
+    <!-- Add XLSX library for Excel processing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

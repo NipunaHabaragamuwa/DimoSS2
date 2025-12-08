@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIMO Secret Santa - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="logo.jpg">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="logo.jpg" alt="DIMO Logo" class="logo">
+                <div class="header-text">
+                    <h1><i class="fas fa-gift"></i> DIMO Secret Santa</h1>
+                    <p class="subtitle">The Next Generation Gift Exchange</p>
+                </div>
+            </div>
+            
+            <div class="login-form">
+                <h2><i class="fas fa-user-circle"></i> Employee Login</h2>
+                
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="username" placeholder="Enter your full name as in records">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-id-card"></i> Employee Number</label>
+                    <input type="password" id="password" placeholder="Enter your employee number">
+                </div>
+                
+                <button id="loginBtn" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Login to Secret Santa
+                </button>
+                
+                <div class="login-help">
+                    <p><i class="fas fa-question-circle"></i> Login with: Name = <strong>John Doe</strong>, Emp # = <strong>1001</strong> (for testing)</p>
+                </div>
+                
+                <div class="login-footer">
+                    <button id="adminLoginBtn" class="btn-admin">
+                        <i class="fas fa-cogs"></i> Admin Login
+                    </button>
+                </div>
+            </div>
+            
+            <div class="christmas-animation">
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="gift-box">
+                    <i class="fas fa-gift"></i>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="login-footer-page">
+            <p>© <span id="currentYear"></span> DIMO Agribusinesses | The Next Generation Agriculture</p>
+            <div class="footer-icons">
+                <i class="fas fa-tree"></i>
+                <i class="fas fa-gift"></i>
+                <i class="fas fa-star"></i>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Admin Login Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h2>Admin Login</h2>
+            <div class="form-group">
+                <label for="adminPassword">Admin Password</label>
+                <input type="password" id="adminPassword" placeholder="Enter admin password">
+                <small>Default password: HabourRay12@</small>
+            </div>
+            <button id="adminAccessBtn" class="btn-generate">
+                <i class="fas fa-unlock"></i> Access Admin Panel
+            </button>
+        </div>
+    </div>
+    
+    <!-- Add XLSX library for Excel processing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
