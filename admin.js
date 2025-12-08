@@ -2,17 +2,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set current year
     document.getElementById('currentYear').textContent = new Date().getFullYear();
     
-    // Check if admin is accessing (simple check)
-    if (!sessionStorage.getItem('adminLoggedIn')) {
-        const adminPassword = prompt("Enter admin password:");
-        if (adminPassword !== "HabourRay12@") {
-            alert("Unauthorized access. Redirecting to login.");
-            window.location.href = "index.html";
-            return;
-        } else {
-            sessionStorage.setItem('adminLoggedIn', 'true');
-        }
-    }
+    // Pre-assigned data from Excel
+    const preAssignedData = [
+        { id: 1, name: 'Dewmini Kodithuwakku', empNumber: 'S07045', email: 'dewmini.kodithuwakku@dimolanka.com', assignedTo: 'Anushi Chathurika' },
+        { id: 2, name: 'Anushi Chathurika', empNumber: 'T00551', email: 'Anushi.Amaraweera@dimolanka.com', assignedTo: 'Nilumi Amanda' },
+        { id: 3, name: 'Nilumi Amanda', empNumber: 'S07016', email: 'Nilumi.Jayarathne@dimolanka.com', assignedTo: 'Dilshani Namarathne' },
+        { id: 4, name: 'Dilshani Namarathne', empNumber: 'E03988', email: 'dilshani.namarathna@dimolanka.com', assignedTo: 'Nipuna Habaragamuwa' },
+        { id: 5, name: 'Nipuna Habaragamuwa', empNumber: 'TA6866', email: 'Nipuna.Habaragamuwa@dimolanka.com', assignedTo: 'Raveen Akalanka' },
+        { id: 6, name: 'Raveen Akalanka', empNumber: 'TAXXXX', email: 'Raveen.Akalanka@dimolanka.com', assignedTo: 'Hasini Maduhansi' },
+        { id: 7, name: 'Hasini Maduhansi', empNumber: 'TA6869', email: 'Hasini.Maduhansi@dimolanka.com', assignedTo: 'Dewmini Kodithuwakku' }
+    ];
     
     // DOM Elements
     const excelFile = document.getElementById('excelFile');
@@ -234,22 +233,19 @@ document.addEventListener('DOMContentLoaded', function() {
         excelData.focus();
     });
     
-    // Generate assignments using pre-assigned chain
+    // Generate assignments using circular chain
     generateAssignmentsBtn.addEventListener('click', function() {
         if (employees.length < 2) {
             alert('Need at least 2 employees to generate Secret Santa assignments');
             return;
         }
         
-        // Create assignments using circular chain (person 1 gifts to person 2, person 2 to person 3, etc.)
+        // Create assignments using circular chain
         assignments = [];
         
-        // Shuffle employees for random assignment
-        const shuffledEmployees = shuffleArray([...employees]);
-        
-        for (let i = 0; i < shuffledEmployees.length; i++) {
-            const santa = shuffledEmployees[i];
-            const receiver = shuffledEmployees[(i + 1) % shuffledEmployees.length];
+        for (let i = 0; i < employees.length; i++) {
+            const santa = employees[i];
+            const receiver = employees[(i + 1) % employees.length];
             
             assignments.push({
                 santa: santa,
@@ -330,16 +326,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add pre-assigned test data
     addTestDataBtn.addEventListener('click', function() {
-        const preAssignedData = [
-            { id: 1, name: 'Dewmini Kodithuwakku', empNumber: 'S07045', email: 'dewmini.kodithuwakku@dimolanka.com', assignedTo: 'Anushi Chathurika' },
-            { id: 2, name: 'Anushi Chathurika', empNumber: 'T00551', email: 'Anushi.Amaraweera@dimolanka.com', assignedTo: 'Nilumi Amanda' },
-            { id: 3, name: 'Nilumi Amanda', empNumber: 'S07016', email: 'Nilumi.Jayarathne@dimolanka.com', assignedTo: 'Dilshani Namarathne' },
-            { id: 4, name: 'Dilshani Namarathne', empNumber: 'E03988', email: 'dilshani.namarathna@dimolanka.com', assignedTo: 'Nipuna Habaragamuwa' },
-            { id: 5, name: 'Nipuna Habaragamuwa', empNumber: 'TA6866', email: 'Nipuna.Habaragamuwa@dimolanka.com', assignedTo: 'Raveen Akalanka' },
-            { id: 6, name: 'Raveen Akalanka', empNumber: 'TAXXXX', email: 'Raveen.Akalanka@dimolanka.com', assignedTo: 'Hasini Maduhansi' },
-            { id: 7, name: 'Hasini Maduhansi', empNumber: 'TA6869', email: 'Hasini.Maduhansi@dimolanka.com', assignedTo: 'Dewmini Kodithuwakku' }
-        ];
-        
         employees = preAssignedData;
         localStorage.setItem('santaEmployees', JSON.stringify(employees));
         
@@ -365,14 +351,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Back to login
     backToLoginBtn.addEventListener('click', function() {
-        sessionStorage.removeItem('adminLoggedIn');
         window.location.href = 'index.html';
     });
     
     // View dashboard preview
     viewDashboardBtn.addEventListener('click', function() {
         // Open dashboard in new tab with test user
-        const testUser = employees.length > 0 ? employees[0] : { name: 'John Doe', empNumber: '1001' };
+        const testUser = employees.length > 0 ? employees[0] : { name: 'Dewmini Kodithuwakku', empNumber: 'S07045' };
         sessionStorage.setItem('currentUser', JSON.stringify(testUser));
         window.open('dashboard.html', '_blank');
     });
@@ -394,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Helper functions
     function loadData() {
-        employees = JSON.parse(localStorage.getItem('santaEmployees')) || [];
+        employees = JSON.parse(localStorage.getItem('santaEmployees')) || preAssignedData;
         assignments = JSON.parse(localStorage.getItem('santaAssignments')) || [];
     }
     
@@ -490,15 +475,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             assignmentsStatus.innerHTML = '<span style="color:#ff6b6b;">Not generated</span>';
         }
-    }
-    
-    function shuffleArray(array) {
-        const newArray = [...array];
-        for (let i = newArray.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-        }
-        return newArray;
     }
     
     function showModal(title, message) {
