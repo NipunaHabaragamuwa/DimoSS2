@@ -1,347 +1,25 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Set current year
+    // Set current year in footer
     document.getElementById('currentYear').textContent = new Date().getFullYear();
     
-    // Check if admin is accessing (simple check)
-    if (!sessionStorage.getItem('adminLoggedIn')) {
-        const adminPassword = prompt("Enter admin password:");
-        if (adminPassword !== "HabourRay12@") {
-            alert("Unauthorized access. Redirecting to login.");
-            window.location.href = "index.html";
-            return;
-        } else {
-            sessionStorage.setItem('adminLoggedIn', 'true');
-        }
-    }
+    // Check which page we're on
+    const isLoginPage = document.querySelector('.login-container');
+    const isDashboardPage = document.querySelector('.dashboard-container');
     
-    // DOM Elements
-    const excelFile = document.getElementById('excelFile');
-    const browseBtn = document.getElementById('browseBtn');
-    const dropArea = document.getElementById('dropArea');
-    const uploadStatus = document.getElementById('uploadStatus');
-    const excelData = document.getElementById('excelData');
-    const processDataBtn = document.getElementById('processDataBtn');
-    const clearDataBtn = document.getElementById('clearDataBtn');
-    const generateAssignmentsBtn = document.getElementById('generateAssignmentsBtn');
-    const resetAllBtn = document.getElementById('resetAllBtn');
-    const exportDataBtn = document.getElementById('exportDataBtn');
-    const sendAllEmailsBtn = document.getElementById('sendAllEmailsBtn');
-    const addTestDataBtn = document.getElementById('addTestDataBtn');
-    const backToLoginBtn = document.getElementById('backToLogin');
-    const viewDashboardBtn = document.getElementById('viewDashboard');
-    const successModal = document.getElementById('successModal');
-    const closeModal = document.querySelector('.close');
-    const closeModalBtn = document.getElementById('closeModal');
-    const methodButtons = document.querySelectorAll('.method-btn');
+    // Pre-assigned data from Excel
+    const preAssignedData = [
+        { id: 1, name: 'Dewmini Kodithuwakku', empNumber: 'S07045', email: 'dewmini.kodithuwakku@dimolanka.com', assignedTo: 'Anushi Chathurika' },
+        { id: 2, name: 'Anushi Chathurika', empNumber: 'T00551', email: 'Anushi.Amaraweera@dimolanka.com', assignedTo: 'Nilumi Amanda' },
+        { id: 3, name: 'Nilumi Amanda', empNumber: 'S07016', email: 'Nilumi.Jayarathne@dimolanka.com', assignedTo: 'Dilshani Namarathne' },
+        { id: 4, name: 'Dilshani Namarathne', empNumber: 'E03988', email: 'dilshani.namarathna@dimolanka.com', assignedTo: 'Nipuna Habaragamuwa' },
+        { id: 5, name: 'Nipuna Habaragamuwa', empNumber: 'TA6866', email: 'Nipuna.Habaragamuwa@dimolanka.com', assignedTo: 'Raveen Akalanka' },
+        { id: 6, name: 'Raveen Akalanka', empNumber: 'TAXXXX', email: 'Raveen.Akalanka@dimolanka.com', assignedTo: 'Hasini Maduhansi' },
+        { id: 7, name: 'Hasini Maduhansi', empNumber: 'TA6869', email: 'Hasini.Maduhansi@dimolanka.com', assignedTo: 'Dewmini Kodithuwakku' }
+    ];
     
-    let employees = [];
-    let assignments = [];
-    
-    // Initialize
-    loadData();
-    updateUI();
-    
-    // Method selector
-    methodButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const method = this.dataset.method;
-            
-            // Update active button
-            methodButtons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Show corresponding content
-            document.getElementById('fileUploadContainer').classList.remove('active');
-            document.getElementById('pasteContainer').classList.remove('active');
-            document.getElementById(`${method}${method === 'file' ? 'Upload' : ''}Container`).classList.add('active');
-        });
-    });
-    
-    // File upload functionality
-    browseBtn.addEventListener('click', function() {
-        excelFile.click();
-    });
-    
-    excelFile.addEventListener('change', function(e) {
-        if (e.target.files.length > 0) {
-            handleFile(e.target.files[0]);
-        }
-    });
-    
-    // Drag and drop functionality
-    dropArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        dropArea.style.borderColor = '#4caf50';
-        dropArea.style.background = '#e8f5e9';
-    });
-    
-    dropArea.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        dropArea.style.borderColor = '#c8e6c9';
-        dropArea.style.background = '#f8fdf7';
-    });
-    
-    dropArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        dropArea.style.borderColor = '#c8e6c9';
-        dropArea.style.background = '#f8fdf7';
-        
-        if (e.dataTransfer.files.length > 0) {
-            handleFile(e.dataTransfer.files[0]);
-        }
-    });
-    
-    // Handle Excel file
-    function handleFile(file) {
-        const fileName = file.name;
-        const fileExt = fileName.split('.').pop().toLowerCase();
-        
-        if (!['xlsx', 'xls', 'csv'].includes(fileExt)) {
-            alert('Please upload only Excel files (.xlsx, .xls, .csv)');
-            return;
-        }
-        
-        uploadStatus.innerHTML = `<i class="fas fa-spinner fa-spin"></i><p>Processing ${fileName}...</p>`;
-        
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-                
-                processExcelData(jsonData);
-                uploadStatus.innerHTML = `<i class="fas fa-check-circle" style="color:#4caf50;"></i><p>Successfully processed ${fileName}</p><p>Loaded ${employees.length} employees</p>`;
-                
-                // Show success modal
-                showModal('File Uploaded', `Successfully imported ${employees.length} employees from ${fileName}`);
-                
-            } catch (error) {
-                console.error('Error reading file:', error);
-                uploadStatus.innerHTML = `<i class="fas fa-exclamation-circle" style="color:#ff6b6b;"></i><p>Error processing file. Please try again.</p>`;
-                alert('Error reading Excel file. Please make sure the file is in correct format.');
-            }
-        };
-        
-        reader.readAsArrayBuffer(file);
-    }
-    
-    // Process Excel data
-    function processExcelData(jsonData) {
-        employees = [];
-        
-        // Skip header row if exists
-        let startRow = 0;
-        if (jsonData.length > 0) {
-            const firstRow = jsonData[0];
-            // Check if first row looks like headers
-            if (typeof firstRow[0] === 'string' && 
-                (firstRow[0].toLowerCase().includes('name') || 
-                 firstRow[0].toLowerCase().includes('emp'))) {
-                startRow = 1;
-            }
-        }
-        
-        for (let i = startRow; i < jsonData.length; i++) {
-            const row = jsonData[i];
-            if (!row || row.length < 2) continue;
-            
-            const name = String(row[0] || '').trim();
-            const empNumber = String(row[1] || '').trim();
-            
-            if (name && empNumber) {
-                const email = row[2] ? String(row[2]).trim() : '';
-                
-                const employee = {
-                    id: Date.now() + i,
-                    name: name,
-                    empNumber: empNumber,
-                    email: email,
-                    department: row[3] ? String(row[3]).trim() : 'General'
-                };
-                
-                employees.push(employee);
-            }
-        }
-        
-        // Save to localStorage
-        localStorage.setItem('santaEmployees', JSON.stringify(employees));
-        localStorage.setItem('santaGenerated', 'false');
-        localStorage.setItem('santaAssignments', JSON.stringify([]));
-        
-        updateUI();
-    }
-    
-    // Process pasted data
-    processDataBtn.addEventListener('click', function() {
-        const data = excelData.value.trim();
-        
-        if (!data) {
-            alert('Please paste employee data first');
-            return;
-        }
-        
-        const lines = data.split('\n');
-        employees = [];
-        
-        for (let line of lines) {
-            line = line.trim();
-            if (!line) continue;
-            
-            // Split by comma, tab, or pipe
-            const parts = line.split(/[,|\t]/).map(part => part.trim());
-            
-            if (parts.length >= 2) {
-                const name = parts[0];
-                const empNumber = parts[1];
-                const email = parts[2] || '';
-                
-                // Create employee object
-                const employee = {
-                    id: Date.now() + Math.random(),
-                    name: name,
-                    empNumber: empNumber,
-                    email: email,
-                    department: parts[3] || 'General'
-                };
-                
-                employees.push(employee);
-            }
-        }
-        
-        if (employees.length === 0) {
-            alert('No valid employee data found. Please check the format.');
-            return;
-        }
-        
-        // Save to localStorage
-        localStorage.setItem('santaEmployees', JSON.stringify(employees));
-        localStorage.setItem('santaGenerated', 'false');
-        localStorage.setItem('santaAssignments', JSON.stringify([]));
-        
-        updateUI();
-        showModal('Data Imported', `Successfully imported ${employees.length} employees from pasted data.`);
-        
-        // Clear textarea
-        excelData.value = '';
-    });
-    
-    // Clear data
-    clearDataBtn.addEventListener('click', function() {
-        excelData.value = '';
-        excelData.focus();
-    });
-    
-    // Generate assignments using pre-assigned chain
-    generateAssignmentsBtn.addEventListener('click', function() {
-        if (employees.length < 2) {
-            alert('Need at least 2 employees to generate Secret Santa assignments');
-            return;
-        }
-        
-        // Create assignments using circular chain (person 1 gifts to person 2, person 2 to person 3, etc.)
-        assignments = [];
-        
-        // Shuffle employees for random assignment
-        const shuffledEmployees = shuffleArray([...employees]);
-        
-        for (let i = 0; i < shuffledEmployees.length; i++) {
-            const santa = shuffledEmployees[i];
-            const receiver = shuffledEmployees[(i + 1) % shuffledEmployees.length];
-            
-            assignments.push({
-                santa: santa,
-                receiver: receiver
-            });
-        }
-        
-        // Save assignments
-        localStorage.setItem('santaAssignments', JSON.stringify(assignments));
-        localStorage.setItem('santaGenerated', 'true');
-        localStorage.setItem('lastGenerated', new Date().toLocaleString());
-        
-        updateUI();
-        showModal('Assignments Generated', `Successfully generated Secret Santa assignments for ${employees.length} employees using circular chain method.`);
-    });
-    
-    // Reset all data
-    resetAllBtn.addEventListener('click', function() {
-        if (confirm('Are you sure you want to reset ALL data? This will delete all employees and assignments.')) {
-            employees = [];
-            assignments = [];
-            
-            localStorage.setItem('santaEmployees', JSON.stringify([]));
-            localStorage.setItem('santaAssignments', JSON.stringify([]));
-            localStorage.setItem('santaGenerated', 'false');
-            
-            updateUI();
-            showModal('Data Reset', 'All data has been reset successfully.');
-        }
-    });
-    
-    // Export data
-    exportDataBtn.addEventListener('click', function() {
-        if (assignments.length === 0) {
-            alert('No assignments to export. Generate assignments first.');
-            return;
-        }
-        
-        // Create CSV content
-        let csv = 'Santa Name,Santa Email,Santa Emp#,Recipient Name,Recipient Email,Recipient Emp#\n';
-        
-        assignments.forEach(assignment => {
-            csv += `"${assignment.santa.name}","${assignment.santa.email || ''}","${assignment.santa.empNumber}","${assignment.receiver.name}","${assignment.receiver.email || ''}","${assignment.receiver.empNumber}"\n`;
-        });
-        
-        // Create download link
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `secret-santa-assignments-${new Date().toISOString().split('T')[0]}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        showModal('Data Exported', 'Assignments exported as CSV file.');
-    });
-    
-    // Send emails (simulated)
-    sendAllEmailsBtn.addEventListener('click', function() {
-        if (assignments.length === 0) {
-            alert('No assignments to send. Generate assignments first.');
-            return;
-        }
-        
-        // Simulate email sending
-        const originalText = sendAllEmailsBtn.innerHTML;
-        sendAllEmailsBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Test Email...';
-        sendAllEmailsBtn.disabled = true;
-        
-        setTimeout(() => {
-            sendAllEmailsBtn.innerHTML = originalText;
-            sendAllEmailsBtn.disabled = false;
-            showModal('Test Email Sent', `Test email sent successfully. In production, emails would be sent to all ${assignments.length} employees.`);
-        }, 2000);
-    });
-    
-    // Add pre-assigned test data
-    addTestDataBtn.addEventListener('click', function() {
-        const preAssignedData = [
-            { id: 1, name: 'Dewmini Kodithuwakku', empNumber: 'S07045', email: 'dewmini.kodithuwakku@dimolanka.com', assignedTo: 'Anushi Chathurika' },
-            { id: 2, name: 'Anushi Chathurika', empNumber: 'T00551', email: 'Anushi.Amaraweera@dimolanka.com', assignedTo: 'Nilumi Amanda' },
-            { id: 3, name: 'Nilumi Amanda', empNumber: 'S07016', email: 'Nilumi.Jayarathne@dimolanka.com', assignedTo: 'Dilshani Namarathne' },
-            { id: 4, name: 'Dilshani Namarathne', empNumber: 'E03988', email: 'dilshani.namarathna@dimolanka.com', assignedTo: 'Nipuna Habaragamuwa' },
-            { id: 5, name: 'Nipuna Habaragamuwa', empNumber: 'TA6866', email: 'Nipuna.Habaragamuwa@dimolanka.com', assignedTo: 'Raveen Akalanka' },
-            { id: 6, name: 'Raveen Akalanka', empNumber: 'TAXXXX', email: 'Raveen.Akalanka@dimolanka.com', assignedTo: 'Hasini Maduhansi' },
-            { id: 7, name: 'Hasini Maduhansi', empNumber: 'TA6869', email: 'Hasini.Maduhansi@dimolanka.com', assignedTo: 'Dewmini Kodithuwakku' }
-        ];
-        
-        employees = preAssignedData;
-        localStorage.setItem('santaEmployees', JSON.stringify(employees));
+    // Initialize data storage with pre-assigned data
+    function initializePreAssignedData() {
+        localStorage.setItem('santaEmployees', JSON.stringify(preAssignedData));
         
         // Generate assignments from pre-assigned data
         const assignments = [];
@@ -358,152 +36,371 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('santaAssignments', JSON.stringify(assignments));
         localStorage.setItem('santaGenerated', 'true');
         localStorage.setItem('lastGenerated', new Date().toLocaleString());
-        
-        updateUI();
-        showModal('Pre-assigned Data Added', 'Added 7 pre-assigned employees. Assignments have been generated from the chain.');
-    });
-    
-    // Back to login
-    backToLoginBtn.addEventListener('click', function() {
-        sessionStorage.removeItem('adminLoggedIn');
-        window.location.href = 'index.html';
-    });
-    
-    // View dashboard preview
-    viewDashboardBtn.addEventListener('click', function() {
-        // Open dashboard in new tab with test user
-        const testUser = employees.length > 0 ? employees[0] : { name: 'John Doe', empNumber: '1001' };
-        sessionStorage.setItem('currentUser', JSON.stringify(testUser));
-        window.open('dashboard.html', '_blank');
-    });
-    
-    // Modal functionality
-    closeModal.addEventListener('click', function() {
-        successModal.style.display = 'none';
-    });
-    
-    closeModalBtn.addEventListener('click', function() {
-        successModal.style.display = 'none';
-    });
-    
-    window.addEventListener('click', function(event) {
-        if (event.target === successModal) {
-            successModal.style.display = 'none';
-        }
-    });
-    
-    // Helper functions
-    function loadData() {
-        employees = JSON.parse(localStorage.getItem('santaEmployees')) || [];
-        assignments = JSON.parse(localStorage.getItem('santaAssignments')) || [];
     }
     
-    function updateUI() {
-        updateEmployeeList();
-        updateAssignmentsPreview();
-        updateStats();
+    // Check if data exists, if not, initialize with pre-assigned data
+    if (!localStorage.getItem('santaEmployees') || !localStorage.getItem('santaAssignments')) {
+        initializePreAssignedData();
     }
     
-    function updateEmployeeList() {
-        const employeeList = document.getElementById('employeeList');
+    // LOGIN PAGE FUNCTIONALITY
+    if (isLoginPage) {
+        const loginBtn = document.getElementById('loginBtn');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const adminModal = document.getElementById('adminModal');
+        const closeModal = document.querySelector('.close');
+        const adminAccessBtn = document.getElementById('adminAccessBtn');
+        const adminPasswordInput = document.getElementById('adminPassword');
         
-        if (employees.length === 0) {
-            employeeList.innerHTML = `
-                <div class="empty-list">
-                    <i class="fas fa-users-slash"></i>
-                    <p>No employee data loaded yet. Import data using the section above.</p>
-                </div>
-            `;
-            return;
-        }
+        // Employee Login
+        loginBtn.addEventListener('click', function() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!username || !password) {
+                alert('Please enter both name and employee number');
+                return;
+            }
+            
+            const employees = JSON.parse(localStorage.getItem('santaEmployees')) || preAssignedData;
+            
+            // Check if employee exists (case insensitive name match)
+            const employee = employees.find(emp => 
+                emp.name.toLowerCase() === username.toLowerCase() && 
+                emp.empNumber === password
+            );
+            
+            if (employee) {
+                // Store current user in session
+                sessionStorage.setItem('currentUser', JSON.stringify(employee));
+                
+                // Redirect to dashboard
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('Invalid credentials. Please check your name and employee number.');
+            }
+        });
         
-        employeeList.innerHTML = '';
-        employees.forEach(employee => {
-            const item = document.createElement('div');
-            item.className = 'employee-item';
-            item.innerHTML = `
-                <div class="employee-details">
-                    <div class="employee-name">${employee.name}</div>
-                    <div class="employee-meta">
-                        Emp #${employee.empNumber} | ${employee.email || 'No email'} | ${employee.department || 'General'}
-                    </div>
-                </div>
-                <div class="employee-id">ID: ${employee.id.toString().substring(0, 6)}</div>
-            `;
-            employeeList.appendChild(item);
+        // Enter key to login
+        document.getElementById('username').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') loginBtn.click();
+        });
+        
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') loginBtn.click();
+        });
+        
+        // Admin Login Button
+        adminLoginBtn.addEventListener('click', function() {
+            adminModal.style.display = 'flex';
+            adminPasswordInput.focus();
+        });
+        
+        // Close Modal
+        closeModal.addEventListener('click', function() {
+            adminModal.style.display = 'none';
+        });
+        
+        // Admin Access
+        adminAccessBtn.addEventListener('click', function() {
+            const adminPassword = adminPasswordInput.value;
+            const correctPassword = 'HabourRay12@';
+            
+            if (adminPassword === correctPassword) {
+                // Redirect to admin panel
+                window.location.href = 'admin.html';
+            } else {
+                alert('Incorrect admin password. Please try again.');
+                adminPasswordInput.focus();
+            }
+        });
+        
+        // Enter key in admin password
+        adminPasswordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') adminAccessBtn.click();
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === adminModal) {
+                adminModal.style.display = 'none';
+            }
         });
     }
     
-    function updateAssignmentsPreview() {
-        const assignmentsList = document.getElementById('assignmentsList');
+    // DASHBOARD PAGE FUNCTIONALITY
+    if (isDashboardPage) {
+        // Check if user is logged in
+        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
         
-        if (assignments.length === 0) {
-            assignmentsList.innerHTML = '<p class="empty-preview">Assignments will appear here after generation</p>';
+        if (!currentUser) {
+            window.location.href = 'index.html';
             return;
         }
         
-        // Show first 5 assignments as preview
-        assignmentsList.innerHTML = '';
-        const previewCount = Math.min(5, assignments.length);
+        // Display user info
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('displayName').textContent = currentUser.name;
+        document.getElementById('currentUser').textContent = currentUser.name;
         
-        for (let i = 0; i < previewCount; i++) {
-            const assignment = assignments[i];
-            const row = document.createElement('div');
-            row.className = 'assignment-row';
-            row.innerHTML = `
-                <div><strong>${assignment.santa.name}</strong> (${assignment.santa.empNumber})</div>
-                <div><i class="fas fa-long-arrow-alt-right"></i></div>
-                <div><strong>${assignment.receiver.name}</strong> (${assignment.receiver.empNumber})</div>
+        // Get assignments
+        const assignments = JSON.parse(localStorage.getItem('santaAssignments')) || [];
+        const userAssignment = assignments.find(a => a.santa.id === currentUser.id);
+        
+        // Update status message
+        const statusMessage = document.getElementById('statusMessage');
+        const statusIndicator = document.getElementById('statusIndicator');
+        
+        if (userAssignment) {
+            statusMessage.innerHTML = '<span style="color:#4caf50;">Ready to discover your Secret Santa!</span>';
+            statusIndicator.style.borderLeft = '5px solid #4caf50';
+        } else {
+            statusMessage.innerHTML = '<span style="color:#ff6b6b;">Assignments not ready yet. Please contact admin.</span>';
+            statusIndicator.style.borderLeft = '5px solid #ff6b6b';
+        }
+        
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        });
+        
+        // Wheel spin functionality
+        const wheel = document.getElementById('wheel');
+        const wheelInner = document.getElementById('wheelInner');
+        const spinBtn = document.getElementById('spinBtn');
+        const slowSpinBtn = document.getElementById('slowSpinBtn');
+        const totalParticipants = document.getElementById('totalParticipants');
+        const resultContainer = document.getElementById('resultContainer');
+        const revealModal = document.getElementById('revealModal');
+        const closeRevealBtn = document.getElementById('closeRevealBtn');
+        
+        let allParticipants = [];
+        let userAssignmentObj = userAssignment;
+        let wheelSegments = [];
+        let isSpinning = false;
+        
+        // Initialize wheel with participant names
+        function initializeWheel() {
+            const employees = JSON.parse(localStorage.getItem('santaEmployees')) || preAssignedData;
+            allParticipants = employees;
+            
+            // Update participant count
+            totalParticipants.textContent = employees.length;
+            
+            // Clear previous wheel segments
+            wheelInner.innerHTML = '';
+            wheelSegments = [];
+            
+            if (employees.length === 0) {
+                wheelInner.innerHTML = `
+                    <div class="wheel-center">
+                        <i class="fas fa-users-slash"></i>
+                    </div>
+                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; color:#666; width:100%;">
+                        No participants loaded
+                    </div>
+                `;
+                return;
+            }
+            
+            // Add center circle
+            const center = document.createElement('div');
+            center.className = 'wheel-center';
+            center.innerHTML = '<i class="fas fa-gift"></i>';
+            wheelInner.appendChild(center);
+            
+            // Create wheel segments for each participant
+            const total = employees.length;
+            const segmentAngle = 360 / total;
+            
+            employees.forEach((participant, index) => {
+                // Calculate rotation for this segment
+                const rotation = index * segmentAngle;
+                
+                // Create segment element
+                const segment = document.createElement('div');
+                segment.className = 'wheel-segment';
+                segment.style.transform = `rotate(${rotation}deg)`;
+                segment.style.backgroundColor = getSegmentColor(index);
+                
+                // Create name element
+                const nameElement = document.createElement('div');
+                nameElement.className = 'wheel-name';
+                nameElement.textContent = participant.name;
+                
+                // Check if this is the user's assignment
+                if (userAssignmentObj && userAssignmentObj.receiver.id === participant.id) {
+                    nameElement.classList.add('assignment');
+                    nameElement.title = 'Your Secret Santa Assignment!';
+                }
+                
+                segment.appendChild(nameElement);
+                wheelInner.appendChild(segment);
+                
+                // Store segment info
+                wheelSegments.push({
+                    element: segment,
+                    participant: participant,
+                    rotation: rotation,
+                    centerAngle: rotation + (segmentAngle / 2),
+                    isAssignment: userAssignmentObj && userAssignmentObj.receiver.id === participant.id
+                });
+            });
+        }
+        
+        // Get color for segment
+        function getSegmentColor(index) {
+            const colors = [
+                '#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff',
+                '#9b59b6', '#1abc9c', '#e74c3c', '#f39c12',
+                '#2ecc71', '#3498db', '#e67e22', '#95a5a6'
+            ];
+            return colors[index % colors.length];
+        }
+        
+        // Function to spin the wheel
+        function spinWheel(slowMode = false) {
+            if (isSpinning || !userAssignmentObj) {
+                if (!userAssignmentObj) {
+                    alert('Secret Santa assignments have not been generated yet. Please contact admin.');
+                }
+                return;
+            }
+            
+            if (allParticipants.length === 0) {
+                alert('No participants found. Please contact admin.');
+                return;
+            }
+            
+            isSpinning = true;
+            spinBtn.disabled = true;
+            slowSpinBtn.disabled = true;
+            
+            // Find the segment with the user's assignment
+            const assignmentSegment = wheelSegments.find(s => s.isAssignment);
+            if (!assignmentSegment) {
+                console.error('Assignment segment not found');
+                resetWheel(slowMode);
+                return;
+            }
+            
+            // Disable transition while setting up
+            wheelInner.style.transition = 'none';
+            
+            // Calculate target rotation (always lands on the assigned person)
+            const extraRotations = slowMode ? 3 : 6;
+            const targetDegrees = (extraRotations * 360) + (360 - assignmentSegment.centerAngle);
+            
+            // Apply initial rotation (reset to 0)
+            wheelInner.style.transform = `rotate(0deg)`;
+            
+            // Force reflow
+            wheelInner.offsetHeight;
+            
+            // Apply spinning animation
+            if (slowMode) {
+                wheelInner.style.transition = 'transform 8s cubic-bezier(0.2, 0.8, 0.3, 1)';
+                spinBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Slow Spinning...';
+            } else {
+                wheelInner.style.transition = 'transform 4s cubic-bezier(0.2, 0.8, 0.3, 1)';
+                spinBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Spinning...';
+            }
+            
+            // Apply the rotation
+            setTimeout(() => {
+                wheelInner.style.transform = `rotate(${targetDegrees}deg)`;
+            }, 50);
+            
+            // Show result after animation completes
+            const animationTime = slowMode ? 8000 : 4000;
+            setTimeout(() => {
+                showAssignmentResult();
+                resetWheel(slowMode);
+            }, animationTime + 500);
+        }
+        
+        // Reset wheel after spin
+        function resetWheel(slowMode) {
+            // Re-enable buttons
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                slowSpinBtn.disabled = false;
+                spinBtn.innerHTML = '<i class="fas fa-redo"></i> Spin to Reveal Secret Santa';
+                isSpinning = false;
+            }, 1000);
+        }
+        
+        // Show assignment result
+        function showAssignmentResult() {
+            if (!userAssignmentObj) return;
+            
+            const recipient = userAssignmentObj.receiver;
+            
+            // Update modal with assignment details
+            document.getElementById('assignedPerson').textContent = recipient.name;
+            document.getElementById('recipientEmail').textContent = recipient.email || 'Not provided';
+            
+            // Also update the result container on the page
+            resultContainer.innerHTML = `
+                <div class="assignment-result">
+                    <div class="result-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h3 class="result-heading">
+                        <i class="fas fa-check-circle"></i> Assignment Found!
+                    </h3>
+                    
+                    <div class="assignment-display">
+                        <div class="from-to-card">
+                            <div><i class="fas fa-user"></i></div>
+                            <h4>You Are:</h4>
+                            <div class="person-name">${currentUser.name}</div>
+                            <div class="person-details">Emp #${currentUser.empNumber}</div>
+                        </div>
+                        
+                        <div class="arrow-container">
+                            <i class="fas fa-long-arrow-alt-right"></i>
+                            <div class="arrow-text">will gift to</div>
+                        </div>
+                        
+                        <div class="from-to-card to-card">
+                            <div><i class="fas fa-user-circle"></i></div>
+                            <h4>Your Secret Santa:</h4>
+                            <div class="person-name">${recipient.name}</div>
+                            <div class="person-details">Emp #${recipient.empNumber}</div>
+                            <div class="person-details">${recipient.email || ''}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-message">
+                        <p><i class="fas fa-info-circle"></i> <strong>Remember:</strong> Keep this assignment secret until the gift exchange party on December 20th!</p>
+                        <p>Gift spending Minimum: Rs2000 | Please have your gift wrapped and ready by the exchange date.</p>
+                    </div>
+                </div>
             `;
-            assignmentsList.appendChild(row);
+            
+            // Show the modal
+            revealModal.style.display = 'flex';
         }
         
-        if (assignments.length > previewCount) {
-            const more = document.createElement('p');
-            more.className = 'empty-preview';
-            more.textContent = `... and ${assignments.length - previewCount} more assignments`;
-            assignmentsList.appendChild(more);
-        }
-    }
-    
-    function updateStats() {
-        const lastGenerated = localStorage.getItem('lastGenerated');
-        const generated = localStorage.getItem('santaGenerated') === 'true';
+        // Initialize wheel when page loads
+        initializeWheel();
         
-        document.getElementById('employeeCount').textContent = employees.length;
-        document.getElementById('totalEmployees').textContent = employees.length;
-        document.getElementById('assignmentCount').textContent = assignments.length;
-        document.getElementById('lastGenerated').textContent = lastGenerated || 'Never';
+        // Event Listeners
+        spinBtn.addEventListener('click', () => spinWheel(false));
+        slowSpinBtn.addEventListener('click', () => spinWheel(true));
         
-        // Update data status
-        const dataStatus = document.getElementById('dataStatus');
-        if (employees.length === 0) {
-            dataStatus.innerHTML = '<span style="color:#ff6b6b;">No data loaded</span>';
-        } else {
-            dataStatus.innerHTML = `<span style="color:#4caf50;">${employees.length} employees loaded</span>`;
-        }
+        // Close reveal modal
+        closeRevealBtn.addEventListener('click', function() {
+            revealModal.style.display = 'none';
+        });
         
-        // Update assignments status
-        const assignmentsStatus = document.getElementById('assignmentsStatus');
-        if (generated) {
-            assignmentsStatus.innerHTML = `<span style="color:#4caf50;">Generated (${assignments.length} assignments)</span>`;
-        } else {
-            assignmentsStatus.innerHTML = '<span style="color:#ff6b6b;">Not generated</span>';
-        }
-    }
-    
-    function shuffleArray(array) {
-        const newArray = [...array];
-        for (let i = newArray.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-        }
-        return newArray;
-    }
-    
-    function showModal(title, message) {
-        document.getElementById('modalTitle').textContent = title;
-        document.getElementById('modalMessage').textContent = message;
-        successModal.style.display = 'flex';
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === revealModal) {
+                revealModal.style.display = 'none';
+            }
+        });
     }
 });
