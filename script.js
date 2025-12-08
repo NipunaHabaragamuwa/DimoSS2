@@ -368,7 +368,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div><i class="fas fa-user-circle"></i></div>
                             <h4>Your Secret Santa:</h4>
                             <div class="person-name">${recipient.name}</div>
-                            <div class="person-details">Emp #${recipient.empNumber}</div>
                             <div class="person-details">${recipient.email || ''}</div>
                         </div>
                     </div>
