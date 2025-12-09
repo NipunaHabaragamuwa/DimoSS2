@@ -6,32 +6,116 @@ document.addEventListener('DOMContentLoaded', function() {
     const isLoginPage = document.querySelector('.login-container');
     const isDashboardPage = document.querySelector('.dashboard-container');
     
-    // Pre-assigned data from Excel
+    // Pre-assigned data from Excel (Full list)
     const preAssignedData = [
-        { id: 1, name: 'Dewmini Kodithuwakku', empNumber: 'S07045', email: 'dewmini.kodithuwakku@dimolanka.com', assignedTo: 'Anushi Chathurika' },
-        { id: 2, name: 'Anushi Chathurika', empNumber: 'T00551', email: 'Anushi.Amaraweera@dimolanka.com', assignedTo: 'Nilumi Amanda' },
-        { id: 3, name: 'Nilumi Amanda', empNumber: 'S07016', email: 'Nilumi.Jayarathne@dimolanka.com', assignedTo: 'Dilshani Namarathne' },
-        { id: 4, name: 'Dilshani Namarathne', empNumber: 'E03988', email: 'dilshani.namarathna@dimolanka.com', assignedTo: 'Nipuna Habaragamuwa' },
-        { id: 5, name: 'Nipuna Habaragamuwa', empNumber: 'TA6866', email: 'Nipuna.Habaragamuwa@dimolanka.com', assignedTo: 'Raveen Akalanka' },
-        { id: 6, name: 'Raveen Akalanka', empNumber: 'TAXXXX', email: 'Raveen.Akalanka@dimolanka.com', assignedTo: 'Hasini Maduhansi' },
-        { id: 7, name: 'Hasini Maduhansi', empNumber: 'TA6869', email: 'Hasini.Maduhansi@dimolanka.com', assignedTo: 'Dewmini Kodithuwakku' }
+        // Column A Employees
+        { id: 1, name: 'Mr. H.M.P.D.B. DEMATAWA', empNumber: 'E02170', email: 'Priyanga.Dematawa@dimolanka.com' },
+        { id: 2, name: 'Mr. W.P.J. KUMARA', empNumber: 'E02381', email: 'Jagath.Kumara@dimolanka.com' },
+        { id: 3, name: 'Mr. S.G. MATHURANAGE', empNumber: 'E02388', email: 'Sampath.Gunasena@dimolanka.com' },
+        { id: 4, name: 'Mr. W.M.W.C. JAYATHILAKE', empNumber: 'E02483', email: 'Wenura.Jayathilake@dimolanka.com' },
+        { id: 5, name: 'Ms. M. S. KULARATHNA', empNumber: 'E01106', email: 'Mayuri.Kularathna@dimolanka.com' },
+        { id: 6, name: 'Ms. S.K.D. HEWAMANAGE', empNumber: 'E02151', email: 'Kanchana.Hewamanage@dimolanka.com' },
+        { id: 7, name: 'Mr. L.L.W.N. PUSHPAKUMARA', empNumber: 'E03397', email: 'Nalin.Pushpakumara@dimolanka.com' },
+        { id: 8, name: 'Mr. L. H. D. J. HARISCHANDRA', empNumber: 'E03468', email: 'Dinujaya.Jayasanka@dimolanka.com' },
+        { id: 9, name: 'Mr. W. S. D. SILVA', empNumber: 'E03777', email: 'shahen.silva@dimolanka.com' },
+        { id: 10, name: 'Mr. M. B. D. DARSHANA', empNumber: 'E03910', email: 'damindu.darshana@dimolanka.com' },
+        { id: 11, name: 'Mr. S. D. L. D. S. GUNASEKARA', empNumber: 'E04222', email: 'Dulanjaya.Gunasekara@dimolanka.com' },
+        { id: 12, name: 'Mr. R. L. P. RANDARA', empNumber: 'S06699', email: 'Pasindu.Randara@dimolanka.com' },
+        { id: 13, name: 'Mr. E. P. M. BHASHITHA', empNumber: 'S06798', email: 'miyuru.bhashitha@dimolanka.com' },
+        { id: 14, name: 'Mr. J. N. JAYATILLAKE', empNumber: 'E04179', email: 'nilantha.jayatillake@dimolanka.com' },
+        { id: 15, name: 'Ms. M. W. H. B. K. MAKULOLUWA', empNumber: 'E03504', email: 'bhagya.makuloluwa@dimolanka.com' },
+        { id: 16, name: 'Mr. N. S. R. SILVA', empNumber: 'E03873', email: 'sanjana.silva@dimolanka.com' },
+        { id: 17, name: 'Mr. D. M. A. U. BANDARA', empNumber: 'S06638', email: 'avishka.bandara@dimolanka.com' },
+        { id: 18, name: 'Ms. T. N. WANIGARATNE', empNumber: 'E03509', email: 'tharindra.nishanjani@dimolanka.com' },
+        { id: 19, name: 'Mr. V. K. A. D. P KURUPPU', empNumber: 'E03861', email: 'Danusha.Prabath@dimolanka.com' },
+        { id: 20, name: 'Ms. K. P. D. A. PATHIRAGE', empNumber: 'T00501', email: 'dilini.pathirage@dimolanka.com' },
+        { id: 21, name: 'Ms. A. W. G. A. CHATHURIKA', empNumber: 'T00551', email: 'Anushi.Amaraweera@dimolanka.com' },
+        { id: 22, name: 'Ms. D.U Kodithuwakku', empNumber: 'S07045', email: 'dewmini.kodithuwakku@dimolanka.com' },
+        { id: 23, name: 'Ms. W. A. D. NAMARATHNA', empNumber: 'E03988', email: 'dilshani.namarathna@dimolanka.com' },
+        { id: 24, name: 'Ms. J. G. N. AMANDA', empNumber: 'S07016', email: 'Nilumi.Jayarathne@dimolanka.com' },
+        { id: 25, name: 'Ms. T. A. H. P. THILAKARATHNE', empNumber: 'E03306', email: 'Hansi.Thilakarathne@dimolanka.com' },
+        { id: 26, name: 'Mr. A. HAMEED', empNumber: 'E03487', email: 'Althaf.Hameed@dimolanka.com' },
+        { id: 27, name: 'Mr. W.A.M.T.M. ABEYSHINGHE', empNumber: 'E02516', email: 'Thilina.Abeyshinghe@dimolanka.com' },
+        { id: 28, name: 'Mr. C.M.G.K. PREMARATHNE', empNumber: 'E02539', email: 'Gamini.Premarathne@dimolanka.com' },
+        { id: 29, name: 'Mr. D.W.R.W KUMARA', empNumber: 'E03434', email: 'randika.kumara@dimolanka.com' },
+        { id: 30, name: 'Mr. W. P. B. P. WEERAWARDHENA', empNumber: 'E04071', email: 'buddhika.prabath@dimolanka.com' },
+        { id: 31, name: 'Mr. M. D. S. L. ATTANAYAKA', empNumber: 'S06625', email: 'Sajith.Aththanayaka@dimolanka.com' },
+        { id: 32, name: 'Mr. A. M. D. SOMARATHNA', empNumber: 'S06935', email: 'dhanushka.dilshan@dimolanka.com' },
+        { id: 33, name: 'H. C. THISARANEE', empNumber: 'S06360', email: 'chamodya.hettiarachchige@dimolanka.com' },
+        { id: 34, name: 'Mr. T.C. SANJEEWA', empNumber: 'E02480', email: 'Chanaka.Thilakahewa@dimolanka.com' },
+        { id: 35, name: 'Mr. J.A.S.M SERAM', empNumber: 'E03421', email: 'Malshan.Seram@dimolanka.com' },
+        { id: 36, name: 'Mr. T.L.P. CHATHURANGA', empNumber: 'E03546', email: 'Pramod.Liyanage@dimolanka.com' },
+        { id: 37, name: 'Mr. W.S. THARAKA', empNumber: 'E03822', email: 'supun.wawegedarage@dimolanka.com' },
+        { id: 38, name: 'Mr. K. A. B. AYESH', empNumber: 'S06538', email: 'Buddika.Ayesh@dimolanka.com' },
+        { id: 39, name: 'Mr. W. P. G. M. WIJEKUMARA', empNumber: 'S07011', email: 'gayan.maduwantha@dimolanka.com' },
+        { id: 40, name: 'Mr. A. T. R. DHARMASIRI', empNumber: 'S07012', email: 'Tharuksha.Rashmika@dimolanka.com' },
+        { id: 41, name: 'Mr. R. M. S. I. RATHNAYAKE', empNumber: 'S06601', email: 'Suranga.Rathnayake@dimolanka.com' },
+        { id: 42, name: 'Mr. W. A. S. THARINDA', empNumber: 'E04244', email: 'Shanuka.Weerasuriya@dimolanka.com' },
+        { id: 43, name: 'Mr. P.A.N.S. PATHIRAJA', empNumber: 'E02478', email: 'Sampath.Pathiraja@dimolanka.com' },
+        { id: 44, name: 'Ms. I. Y. NAWARATHNE', empNumber: 'E03701', email: 'Irani.Nawarathne@dimolanka.com' },
+        { id: 45, name: 'Mr. K. A. K. N. KUMARA', empNumber: 'E04070', email: 'kasun.kumara@dimolanka.com' },
+        { id: 46, name: 'Mr. A. M. A. D. JAYATHILAKE', empNumber: 'E03190', email: 'aruna.jayathilake@dimolanka.com' },
+        { id: 47, name: 'Mr. A. R. P. PRIYADARSHANA', empNumber: 'E03191', email: 'Rasika.Priyadarshana@dimolanka.com' },
+        { id: 48, name: 'Mr. T. M. D. L. THENNAKOON', empNumber: 'E03107', email: 'Danushka.Thennakoon@dimolanka.com' },
+        { id: 49, name: 'Mr. B. M. C. L. B. BASNAYAKE', empNumber: 'E03305', email: 'Chamal.Basnayake@dimolanka.com' },
+        { id: 50, name: 'Mr. I.M.S.N.K PERERA', empNumber: 'S03254', email: 'Sujith.Nishantha@dimolanka.com' },
+        { id: 51, name: 'Mr. D.S.P.N.P. GUNASEKARA', empNumber: 'S05842', email: 'Pathirana.Gunasekara@dimolanka.com' },
+        { id: 52, name: 'Mr. P. A. A. U. PEIRIS', empNumber: 'S06346', email: 'Udesha.Peiris@dimolanka.com' },
+        { id: 53, name: 'Mr. B. L. L. K. KARUNARATHNA', empNumber: 'S06494', email: 'Lahiru.Karunarathna@dimolanka.com' },
+        { id: 54, name: 'Mr. A. S. D. I. PRASAD', empNumber: 'S06501', email: 'Indika.Prasad@dimolanka.com' },
+        { id: 55, name: 'Mr. M. H. S. A. NIMAL', empNumber: 'S06526', email: 'Sudath.Nimal@dimolanka.com' },
+        { id: 56, name: 'Mr. M. H. D. RATHNAYAKA', empNumber: 'S06527', email: 'Darshana.Rathnayaka@dimolanka.com' },
+        { id: 57, name: 'Mr. J. A. S. JAYASURIYA', empNumber: 'S06592', email: 'Sanath.Jayasuriya@dimolanka.com' },
+        { id: 58, name: 'Mr. L. S. SENEVIRATHNE', empNumber: 'S06537', email: 'Lakshan.Senevirathne@dimolanka.com' },
+        { id: 59, name: 'Mr. R. D. S. SANDAKELUM', empNumber: 'S06600', email: 'Salinda.Sandakelum@dimolanka.com' },
+        { id: 60, name: 'Mr. T. M. K. S. THILAKARATHNA', empNumber: 'S06841', email: 'Kithmina.Sandaruwan@dimolanka.com' },
+        { id: 61, name: 'Mr. D.A.D. PREMACHANDRA', empNumber: 'E04082', email: 'Asitha.Premachandra@dimolanka.com' },
+        { id: 62, name: 'Mr. H. M. M. N. JAYASINGHE', empNumber: 'S06959', email: 'Nihara.Jayasinghe@dimolanka.com' },
+        { id: 63, name: 'W.D.A. SUBASH', empNumber: 'E01631', email: 'Subash.Warnakulasooriya@dimolanka.com' },
+        { id: 64, name: 'R. U. KARUNANAYAKE', empNumber: 'E03704', email: 'Ridmi.Karunanayake@dimolanka.com' },
+        { id: 65, name: 'N. M. D. NAWARATHNA', empNumber: 'E03751', email: 'Muthu.Nawarathna@dimolanka.com' },
+        { id: 66, name: 'Mr. P. K. S. P. WEERAWARDANA', empNumber: 'SS0158', email: 'Sampath.Weerawardana@dimolanka.com' },
+        
+        // Additional employees from other columns
+        { id: 67, name: 'Mandira Dewasmitha', empNumber: 'N/A', email: '' },
+        { id: 68, name: 'Minuri Hansana', empNumber: 'N/A', email: '' },
+        { id: 69, name: 'Yeshika Pramodi', empNumber: 'N/A', email: 'Yashika.Pramodi@dimolanka.com' },
+        { id: 70, name: 'Nipuna Habaragamuwa', empNumber: 'N/A', email: 'Nipuna.Habaragamuwa@dimolanka.com' },
+        { id: 71, name: 'Raveen Akalanka', empNumber: 'N/A', email: 'Raveen.Akalanka@dimolanka.com' },
+        { id: 72, name: 'Hasini Maduhansi', empNumber: 'N/A', email: 'Hasini.Maduhansi@dimolanka.com' },
+        { id: 73, name: 'Nadini', empNumber: 'N/A', email: '' },
+        { id: 74, name: 'kaweesha', empNumber: 'N/A', email: '' },
+        { id: 75, name: 'dilshan', empNumber: 'N/A', email: '' },
+        { id: 76, name: 'Imesh', empNumber: 'N/A', email: 'Imesha.Kumarage@dimolanka.com' },
+        { id: 77, name: 'Parami Sulochana', empNumber: 'N/A', email: 'paramisulochana1@gmail.com' }
     ];
     
     // Initialize data storage with pre-assigned data
     function initializePreAssignedData() {
         localStorage.setItem('santaEmployees', JSON.stringify(preAssignedData));
         
-        // Generate assignments from pre-assigned data
+        // Generate circular assignments (each person gives to the next, last gives to first)
         const assignments = [];
-        preAssignedData.forEach(santa => {
-            const receiver = preAssignedData.find(emp => emp.name === santa.assignedTo);
-            if (receiver) {
-                assignments.push({
-                    santa: { id: santa.id, name: santa.name, empNumber: santa.empNumber, email: santa.email },
-                    receiver: { id: receiver.id, name: receiver.name, empNumber: receiver.empNumber, email: receiver.email }
-                });
-            }
-        });
+        
+        for (let i = 0; i < preAssignedData.length; i++) {
+            const santa = preAssignedData[i];
+            const receiver = preAssignedData[(i + 1) % preAssignedData.length];
+            
+            assignments.push({
+                santa: { 
+                    id: santa.id, 
+                    name: santa.name, 
+                    empNumber: santa.empNumber, 
+                    email: santa.email 
+                },
+                receiver: { 
+                    id: receiver.id, 
+                    name: receiver.name, 
+                    empNumber: receiver.empNumber, 
+                    email: receiver.email 
+                }
+            });
+        }
         
         localStorage.setItem('santaAssignments', JSON.stringify(assignments));
         localStorage.setItem('santaGenerated', 'true');
@@ -66,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Check if employee exists (case insensitive name match)
             const employee = employees.find(emp => 
-                emp.name.toLowerCase() === username.toLowerCase() && 
+                emp.name.toLowerCase().includes(username.toLowerCase()) && 
                 emp.empNumber === password
             );
             
@@ -77,7 +161,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Redirect to dashboard
                 window.location.href = 'dashboard.html';
             } else {
-                alert('Invalid credentials. Please check your name and employee number.');
+                // Try with partial name match
+                const employeePartial = employees.find(emp => {
+                    const empNameLower = emp.name.toLowerCase();
+                    const inputNameLower = username.toLowerCase();
+                    return (empNameLower.includes(inputNameLower) || 
+                           inputNameLower.includes(empNameLower.split(' ').pop().toLowerCase())) && 
+                           emp.empNumber === password;
+                });
+                
+                if (employeePartial) {
+                    sessionStorage.setItem('currentUser', JSON.stringify(employeePartial));
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert('Invalid credentials. Please check your name and employee number.\n\nExample: Name: "Mr. H.M.P.D.B. DEMATAWA" or "DEMATAWA", Emp#: "E02170"');
+                }
             }
         });
         
@@ -210,24 +308,27 @@ document.addEventListener('DOMContentLoaded', function() {
             center.innerHTML = '<i class="fas fa-gift"></i>';
             wheelInner.appendChild(center);
             
-            // Create wheel segments for each participant
-            const total = employees.length;
-            const segmentAngle = 360 / total;
+            // Create wheel segments for each participant (show only first 12 names for visibility)
+            const displayCount = Math.min(employees.length, 12); // Limit to 12 for better visibility
+            const segmentAngle = 360 / displayCount;
             
-            employees.forEach((participant, index) => {
-                // Calculate rotation for this segment
-                const rotation = index * segmentAngle;
+            for (let i = 0; i < displayCount; i++) {
+                const participant = employees[i];
+                const rotation = i * segmentAngle;
                 
                 // Create segment element
                 const segment = document.createElement('div');
                 segment.className = 'wheel-segment';
                 segment.style.transform = `rotate(${rotation}deg)`;
-                segment.style.backgroundColor = getSegmentColor(index);
+                segment.style.backgroundColor = getSegmentColor(i);
                 
-                // Create name element
+                // Create name element (shortened for display)
                 const nameElement = document.createElement('div');
                 nameElement.className = 'wheel-name';
-                nameElement.textContent = participant.name;
+                const displayName = participant.name.length > 15 ? 
+                    participant.name.substring(0, 12) + '...' : participant.name;
+                nameElement.textContent = displayName;
+                nameElement.title = participant.name; // Full name on hover
                 
                 // Check if this is the user's assignment
                 if (userAssignmentObj && userAssignmentObj.receiver.id === participant.id) {
@@ -246,7 +347,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     centerAngle: rotation + (segmentAngle / 2),
                     isAssignment: userAssignmentObj && userAssignmentObj.receiver.id === participant.id
                 });
-            });
+            }
+            
+            // If there are more than 12 participants, add a "more" segment
+            if (employees.length > 12) {
+                const moreSegment = document.createElement('div');
+                moreSegment.className = 'wheel-segment';
+                moreSegment.style.transform = `rotate(${11 * segmentAngle + segmentAngle}deg)`;
+                moreSegment.style.backgroundColor = '#95a5a6';
+                
+                const moreElement = document.createElement('div');
+                moreElement.className = 'wheel-name';
+                moreElement.textContent = `+${employees.length - 12} more`;
+                moreElement.title = `${employees.length - 12} more participants`;
+                
+                moreSegment.appendChild(moreElement);
+                wheelInner.appendChild(moreSegment);
+            }
         }
         
         // Get color for segment
@@ -368,12 +485,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div><i class="fas fa-user-circle"></i></div>
                             <h4>Your Secret Santa:</h4>
                             <div class="person-name">${recipient.name}</div>
-                            <div class="person-details">${recipient.email || ''}</div>
+                            <div class="person-details">${recipient.email || 'Email not provided'}</div>
+                            <div class="person-details">Emp #${recipient.empNumber}</div>
                         </div>
                     </div>
                     
                     <div class="result-message">
-                        <p><i class="fas fa-info-circle"></i> <strong>Remember:</strong> Keep this assignment secret until the gift exchange party on December 20th!</p>
+                        <p><i class="fas fa-info-circle"></i> <strong>Remember:</strong> Keep this assignment secret until the gift exchange party!</p>
                         <p>Gift spending Minimum: Rs2000 | Please have your gift wrapped and ready by the exchange date.</p>
                     </div>
                 </div>
