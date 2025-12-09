@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Set current year
+    
     document.getElementById('currentYear').textContent = new Date().getFullYear();
     
     // Pre-assigned data from Excel
